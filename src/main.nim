@@ -104,16 +104,19 @@ proc login(username, password: string) =
 
 proc logout() =
   let stat = getResponse("status", initTable[string, string]())
-  let ip = stat["client_ip"].getStr()
+  if stat["error"].getStr() != "ok":
+    echo "user is not online. skip"
+    return
+  let ip = stat["online_ip"].getStr()
   let user = stat["user_name"].getStr()
   let params = {"action": "logout", "username": user, "ac_id": "1", "ip": ip}.toTable
   let resp = getResponse("logout", params)
   let res = resp["error"].getStr()
-  if res == "ok":
-    echo resp["suc_msg"].getStr()
-  else:
+  if res != "ok":
     let error_msg = resp["error_msg"].getStr()
     echo res & ", " & error_msg
+  else:
+    echo "logout success."
 
 proc status() =
   let resp = getResponse("status", initTable[string, string]())
