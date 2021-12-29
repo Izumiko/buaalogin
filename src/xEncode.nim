@@ -42,7 +42,6 @@ proc xEncode(info, token: string): string =
   if len(info) == 0:
     result = ""
   else:
-    echo info
     var v = s(info,true)
     var k = s(token, false)
     var n = len(v) - 1
