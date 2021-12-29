@@ -10,6 +10,17 @@ cd buaalogin
 nimble build
 ```
 
+交叉编译说明：
+假设Host是Linux x64，编译mipsel架构路由上使用的版本，则在`src/nim.cfg`中增加如下配置（具体路径根据openwrt编译路径填写）
+
+```shell
+mipsel.linux.gcc.path = "/home/user/lede/staging_dir/toolchain-mipsel_24kc_gcc-8.4.0_musl/bin"
+mipsel.linux.gcc.exe = "mipsel-openwrt-linux-gcc"
+mipsel.linux.gcc.linkerexe = "mipsel-openwrt-linux-gcc"
+```
+
+之后执行 `nim c --cpu:mipsel --os:linux src/main.nim` 来生成程序。
+
 ## 用法
 
 ```
