@@ -1,4 +1,4 @@
-import parseopt, httpclient, uri, times, net, tables, strutils, json
+import parseopt, httpclient, uri, times, net, tables, strutils, json, std/os
 import xEncode
 
 var
@@ -78,7 +78,7 @@ proc getLoginParams(username, password, ac_id, ip, enc_ver, n, Type, os, name, d
     "double_stack": double_stack
     }.toTable
 
-proc login(username, password: string) =
+proc login(username, password: string): bool =
   var
     ac_id        = "1"
     enc_ver      = "srun_bx1"
@@ -98,9 +98,11 @@ proc login(username, password: string) =
 
   if res == "ok":
     echo loginResponse["suc_msg"].getStr()
+    result = true
   else:
     let error_msg = loginResponse["error_msg"].getStr()
     echo res & ", " & error_msg
+    result = false
 
 proc logout() =
   let stat = getResponse("status", initTable[string, string]())
@@ -129,7 +131,13 @@ proc detect(user, pwd: string) =
     echo "User is already online. skip"
   else:
     echo "not online, logging in"
-    login(user, pwd)
+    # try to login 3 times
+    for i in 0 ..< 3:
+      if login(user, pwd):
+        break
+      else:
+        echo "login failed, retrying"
+        sleep(2000)
 
 proc main() =
   var p = initOptParser()
@@ -151,7 +159,7 @@ proc main() =
 
   case action
   of "login":
-    login(user, pwd)
+    discard login(user, pwd)
   of "logout":
     logout()
   of "status":
