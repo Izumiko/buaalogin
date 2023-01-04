@@ -10,6 +10,8 @@ cd buaalogin
 nimble build
 ```
 
+使用`nim --app:gui c src/main.nim`来生成Windows下无cmd窗口的程序。
+
 交叉编译说明：
 假设Host是Linux x64，编译mipsel架构路由上使用的版本，则在`src/nim.cfg`中增加如下配置（具体路径根据openwrt编译路径填写）
 
