@@ -7,6 +7,7 @@
 ```shell
 git clone https://github.com/Izumiko/buaalogin.git
 cd buaalogin
+nimble install checksums
 nimble build
 ```
 

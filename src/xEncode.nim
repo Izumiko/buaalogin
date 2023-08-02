@@ -1,4 +1,4 @@
-import hmac, std/sha1, strutils
+import checksums/md5, checksums/sha1, strutils
 
 proc toString(str: seq[byte]): string =
   result = newStringOfCap(len(str))
@@ -98,9 +98,37 @@ proc trashBase64(t: string): string =
 proc getEncodedInfo*(info, token: string): string =
   result = "{SRBX1}" & trashBase64(xEncode(info, token))
 
+proc hmac_md5*(key, data: string): MD5Digest =
+  let digest_size = 16
+  let block_size = 64
+  let opad = 0x5c'u8
+  let ipad = 0x36'u8
+  var keyA: seq[uint8] = @[]
+  var o_key_pad = newString(block_size + digest_size)
+  var i_key_pad = newString(block_size)
+
+  if key.len > block_size:
+    for n in toMD5(key):
+      keyA.add(n.uint8)
+  else:
+    for n in key:
+      keyA.add(n.uint8)
+  
+  while keyA.len < block_size:
+    keyA.add(0'u8)
+  
+  for i in 0..block_size-1:
+    o_key_pad[i] = char(keyA[i] xor opad)
+    i_key_pad[i] = char(keyA[i] xor ipad)
+  var i = 0
+  for x in toMD5(i_key_pad & data):
+    o_key_pad[block_size + i] = char(x)
+    inc(i)
+  result = toMD5(o_key_pad)
+
 proc getEncodedPassword*(password, token: string): string =
   let md5 = hmac_md5(token, password)
-  result = toHex(md5)
+  result = toLowerAscii($md5)
 
 proc getEncodedChkstr*(chkstr: string): string =
   result = toLowerAscii($(secureHash(chkstr)))
