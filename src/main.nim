@@ -21,7 +21,8 @@ proc getResponse(reqType: string; params: Table[string, string]): JsonNode =
   of "status":
     reqUrl &= "rad_user_info"
   p["callback"] = callbackName
-  p["_"] = intToStr(int(getTime().toUnixFloat()*1000))
+  # p["_"] = intToStr(int(getTime().toUnixFloat()*1000))
+  p["_"] = $(getTime().toUnix() * 1000)
   p["ad_check"] = "1"
   var q: seq[string]
   for k, v in p.pairs:

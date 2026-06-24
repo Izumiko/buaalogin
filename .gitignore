@@ -4,4 +4,7 @@ htmldocs/
 .idea
 .vscode
 bin
+build
+dist
 *.exe
+buaalogin
